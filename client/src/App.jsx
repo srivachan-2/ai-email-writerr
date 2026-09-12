@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("token")
@@ -27,8 +29,8 @@ function App() {
 
     try {
       const url = isLogin
-        ? "http://localhost:5000/api/auth/login"
-        : "http://localhost:5000/api/auth/register";
+        ? `${API_URL}/api/auth/login`
+        : `${API_URL}/api/auth/register`;
 
       const body = isLogin
         ? {
@@ -54,10 +56,14 @@ function App() {
       );
 
       setIsLoggedIn(true);
+      setMessage("");
     } catch (error) {
+      console.error("Authentication error:", error);
+
       setMessage(
         error.response?.data?.message ||
-        "Something went wrong"
+        error.message ||
+        "Unable to connect to server"
       );
     }
   };
@@ -88,7 +94,7 @@ function App() {
       setEmailDraft("");
 
       const response = await axios.post(
-        "http://localhost:5000/api/email/generate",
+        `${API_URL}/api/email/generate`,
         {
           purpose,
           tone,
@@ -98,10 +104,11 @@ function App() {
 
       setEmailDraft(response.data.email);
     } catch (error) {
-      console.error(error);
+      console.error("Email generation error:", error);
 
       setEmailDraft(
         error.response?.data?.message ||
+        error.message ||
         "Failed to generate email"
       );
     } finally {
@@ -235,6 +242,10 @@ function App() {
                 <option>
                   Persuasive
                 </option>
+
+                <option>
+                  Romantic
+                </option>
               </select>
 
               <label>
@@ -316,6 +327,7 @@ function App() {
 
               {!emailDraft && !loading && (
                 <div className="empty-state">
+
                   <div className="empty-icon">
                     ✦
                   </div>
@@ -329,6 +341,7 @@ function App() {
                     Fill in the details and
                     click Generate Email
                   </span>
+
                 </div>
               )}
 
@@ -385,6 +398,7 @@ function App() {
             <div className="feature-list">
 
               <div className="feature">
+
                 <div className="feature-icon">
                   ✦
                 </div>
@@ -398,9 +412,11 @@ function App() {
                     Generate polished emails instantly
                   </span>
                 </div>
+
               </div>
 
               <div className="feature">
+
                 <div className="feature-icon">
                   ✓
                 </div>
@@ -414,9 +430,11 @@ function App() {
                     Professional, friendly, formal and more
                   </span>
                 </div>
+
               </div>
 
               <div className="feature">
+
                 <div className="feature-icon">
                   ↗
                 </div>
@@ -430,6 +448,7 @@ function App() {
                     Refine your draft before sending
                   </span>
                 </div>
+
               </div>
 
             </div>
@@ -444,6 +463,7 @@ function App() {
           <div className="auth-card-header">
 
             <div className="mobile-brand brand">
+
               <div className="brand-icon">
                 ✦
               </div>
@@ -451,6 +471,7 @@ function App() {
               <span>
                 AI Email Writer
               </span>
+
             </div>
 
             <h2>
@@ -471,6 +492,7 @@ function App() {
 
             {!isLogin && (
               <div className="field">
+
                 <label>
                   Name
                 </label>
@@ -484,10 +506,12 @@ function App() {
                   }
                   required
                 />
+
               </div>
             )}
 
             <div className="field">
+
               <label>
                 Email
               </label>
@@ -501,9 +525,11 @@ function App() {
                 }
                 required
               />
+
             </div>
 
             <div className="field">
+
               <label>
                 Password
               </label>
@@ -517,6 +543,7 @@ function App() {
                 }
                 required
               />
+
             </div>
 
             <button
